@@ -1,8 +1,12 @@
+using Microsoft.AspNetCore.Localization;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using MvcTest.Models;
 using MVCTest.Data;
+using System.Globalization;
+
 var builder = WebApplication.CreateBuilder(args);
+
 builder.Services.AddDbContext<MoviesContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("MoviesContext") ?? throw new InvalidOperationException("Connection string 'MoviesContext' not found.")));
 
@@ -25,6 +29,19 @@ using (var scope = app.Services.CreateScope())
 
     SeedData.Initialize(services);
 }
+
+var supportedCultures = new[]
+          {
+                new CultureInfo("en-us"),
+       };
+
+app.UseRequestLocalization(new RequestLocalizationOptions
+{
+    DefaultRequestCulture = new RequestCulture("en-us"),
+    SupportedCultures = supportedCultures,
+    SupportedUICultures = supportedCultures
+});
+
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();
